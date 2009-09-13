@@ -5,6 +5,33 @@ class GdbmModel
 
   attr_accessor :id
 
+  def self.bind_field(field, options)
+    klass = options[:to]
+    bound_fields[field.to_s] = klass
+  end
+
+  def self.bound_fields
+    @bound_fields ||= {}
+  end
+
+  def valid?
+    v = super
+    return v if v
+    convert_values
+    super
+  end
+      
+  def convert_values
+     bound_fields.each do |field,klass|
+       val = self.send(field)
+       self.send("#{field}=", val.send(GDBMP::CONVERSIONS[klass.to_s]))
+     end
+  end
+
+  def bound_fields
+    self.class.bound_fields
+  end
+
   def new_record?
     @new_record
   end

@@ -87,4 +87,11 @@ class GdbmModelTest < ActiveSupport::TestCase
     b = Book.find(book.id)
     assert_equal("Other", b.title)
   end
+
+  def test_class_bindings
+    book = Book.new(:title => "a", :author => "b", :year => "1999")
+    book.save
+    b = Book.find(book.id)
+    assert_equal(1999, b.year)
+  end
 end
